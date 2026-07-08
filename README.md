@@ -109,26 +109,39 @@ npm start          # serves backend (and built frontend, if NODE_ENV=production)
 - **CORS** — Configured for local + deployed frontend origins
 
 ---
-
-## ☁️ Deployment (Single-Service, Render-Style)
-
-`backend/server.js` already handles serving the built frontend when `NODE_ENV=production`, so the whole app can run as one Node service:
-
-1. Push this repo to GitHub.
-2. On [Render](https://dashboard.render.com) (or Railway), create a **Web Service** pointing at this repo.
-3. **Build Command:**
-   ```bash
-   npm run build
-   ```
-   *(installs root, backend, and frontend deps, then builds the React app)*
-4. **Start Command:**
-   ```bash
-   npm start
-   ```
-5. Add all `backend/.env` variables under **Environment Variables**, and set `NODE_ENV=production`.
-6. Deploy — Express will serve the API under `/api/*` and the built React app for every other route.
-
-> Note: `server.js` references `path.join(...)` for the production static build but doesn't currently `require('path')` at the top of the file — add `const path = require('path')` before deploying with `NODE_ENV=production`, or the server will crash on startup in production mode.
+## ☁️ Deploying on Vercel (Frontend + Backend as Two Projects)
+ 
+Vercel now supports deploying Express apps directly (zero-config), but it runs them as **serverless functions**, not a persistent server. That means:
+- The filesystem is read-only (except `/tmp`, which doesn't persist) — this repo's image upload path has already been updated to upload directly from memory to Cloudinary instead of writing to disk, so it works on Vercel.
+- `express.static()` doesn't serve files on Vercel, so the "serve the React build from Express" block in `server.js` is a no-op there — deploy the frontend as its **own** Vercel project instead.
+- MongoDB connections are cached across warm invocations (already handled in `backend/src/config/db.js`) to avoid exhausting Atlas's connection limit.
+### 1. Deploy the backend
+1. In Vercel, **Add New Project** → import this repo.
+2. Set **Root Directory** to `backend`.
+3. Framework preset: Vercel auto-detects Express — no `vercel.json` needed.
+4. Add environment variables (Project Settings → Environment Variables):
+```
+   MONGO_URI=...
+   JWT_SECRET=...
+   EMAIL_USER=...
+   EMAIL_PASS=...
+   CLOUDINARY_CLOUD_NAME=...
+   CLOUDINARY_API_KEY=...
+   CLOUDINARY_API_SECRET=...
+   RAZORPAY_KEY_ID=...
+   RAZORPAY_KEY_SECRET=...
+   FRONTEND_URL=https://your-frontend-project.vercel.app
+   NODE_ENV=production
+```
+5. In MongoDB Atlas → Network Access, allow `0.0.0.0/0` (Vercel functions run from dynamic IPs).
+6. Deploy. You'll get a URL like `https://shopnext-backend.vercel.app`.
+### 2. Deploy the frontend
+1. **Add New Project** again → same repo, but set **Root Directory** to `frontend`.
+2. Vercel auto-detects Create React App (`react-scripts`).
+3. Add an environment variable pointing at your deployed backend, e.g. `REACT_APP_API_URL=https://shopnext-backend.vercel.app/api`, and make sure your frontend's API calls use it instead of the CRA `proxy` field (the `proxy` setting in `frontend/package.json` only works in local dev, not in production builds).
+4. Deploy. You'll get a URL like `https://shopnext.vercel.app`.
+### 3. Connect the two
+- Update the backend's `FRONTEND_URL` env var to match the deployed frontend URL, then redeploy the backend (this feeds into the CORS `origin` list in `server.js`).
 
 ---
 
