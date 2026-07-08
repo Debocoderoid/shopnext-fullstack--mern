@@ -15,6 +15,11 @@ import Home from './pages/home';
 import Profile from './pages/profile';
 import OrderSuccess from './pages/orderSuccess';
 import AdminDashboard from './admin/AdminDashboard';
+import AdminUsers from './admin/AdminUsers';
+import AdminProducts from './admin/AdminProducts';
+import AddProduct from './admin/AddProduct';
+import EditProduct from './admin/EditProduct';
+import AdminOrders from './admin/AdminOrders';
 
 function App() {
   return (
@@ -35,11 +40,11 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/ordersuccess" element={<OrderSuccess />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          {/* <Route path="/admin/add-product" element={<AddProduct />} /> */}
-          {/* <Route path="/admin/products" element={<AdminProducts />} /> */}
-          {/* <Route path="/admin/edit-product/:id" element={<EditProduct />} /> */}
-          {/* <Route path="/admin/orders" element={<AdminOrders />} /> */}
-          {/* <Route path="/admin/users" element={<AdminUsers />} /> */}
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/add-product" element={<AddProduct />} />
+          <Route path="/admin/edit-product/:id" element={<EditProduct />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
         </Routes>
       </div>
       <Footer />
