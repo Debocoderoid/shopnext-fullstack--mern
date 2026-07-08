@@ -1,6 +1,14 @@
-# 🛒 ShopNext — Full-Stack E-Commerce Platform
+<div align="center">
+  <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="ShopNext Logo" width="80" />
+  <h1>ShopNext — Full-Stack MERN E-Commerce Platform</h1>
+  <p>A full-stack e-commerce application built with <b>React + Redux + Node.js/Express + MongoDB</b>, featuring product browsing, cart & checkout, Razorpay payments, order tracking, and a full admin dashboard for managing products, orders, and users.</p>
 
-A full-stack e-commerce application built with **React + Redux + Node.js/Express + MongoDB**, featuring product browsing, cart & checkout, Razorpay payments, order tracking, and a full admin dashboard for managing products, orders, and users.
+  ![Node](https://img.shields.io/badge/Node.js-≥18-339933?logo=node.js&logoColor=white)
+  ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+  ![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
+  ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
+  ![Razorpay](https://img.shields.io/badge/Payments-Razorpay-0C2451?logo=razorpay&logoColor=white)
+</div>
 
 ---
 
@@ -62,9 +70,12 @@ npm run start:frontend   # frontend only
 ```
 
 ### 5. Seed the Database (optional)
+Populates the DB with an admin user, a sample user, and demo products, then wipes and re-inserts on every run:
 ```bash
 npm run seed
 ```
+> **Seed Admin Login:** `admin@shopnext.com` / `123456`
+> **Seed User Login:** `debo@example.com` / `123456`
 
 ### 6. Production Build
 ```bash
@@ -96,6 +107,28 @@ npm start          # serves backend (and built frontend, if NODE_ENV=production)
 - **Image uploads** — Multer (local temp storage) → Cloudinary (persistent hosting)
 - **Email** — Nodemailer integration for verification/notifications
 - **CORS** — Configured for local + deployed frontend origins
+
+---
+
+## ☁️ Deployment (Single-Service, Render-Style)
+
+`backend/server.js` already handles serving the built frontend when `NODE_ENV=production`, so the whole app can run as one Node service:
+
+1. Push this repo to GitHub.
+2. On [Render](https://dashboard.render.com) (or Railway), create a **Web Service** pointing at this repo.
+3. **Build Command:**
+   ```bash
+   npm run build
+   ```
+   *(installs root, backend, and frontend deps, then builds the React app)*
+4. **Start Command:**
+   ```bash
+   npm start
+   ```
+5. Add all `backend/.env` variables under **Environment Variables**, and set `NODE_ENV=production`.
+6. Deploy — Express will serve the API under `/api/*` and the built React app for every other route.
+
+> Note: `server.js` references `path.join(...)` for the production static build but doesn't currently `require('path')` at the top of the file — add `const path = require('path')` before deploying with `NODE_ENV=production`, or the server will crash on startup in production mode.
 
 ---
 
@@ -200,12 +233,16 @@ Base URL: `http://localhost:5000/api`
 
 ## 🛠️ Tech Stack
 
-**Frontend:** React 19, React Router, Redux Toolkit, React Redux
-**Backend:** Node.js, Express 5, Mongoose 9
-**Auth:** JWT, bcryptjs
-**Payments:** Razorpay
-**Media:** Multer + Cloudinary
-**Email:** Nodemailer
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, React Router 7, Redux Toolkit, React Redux, Context API (auth) |
+| Backend | Node.js, Express 5 |
+| Database | MongoDB + Mongoose 9 |
+| Auth | JWT (jsonwebtoken), bcryptjs |
+| Payments | Razorpay |
+| Media | Multer (upload) → Cloudinary (storage) |
+| Email | Nodemailer |
+| Dev Tooling | Nodemon, Concurrently (monorepo dev script) |
 
 ---
 
