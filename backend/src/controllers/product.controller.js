@@ -1,6 +1,16 @@
 const Product = require('../models/product.model')
 const cloudinary = require('../config/cloudinary')
 
+function uploadBufferToCloudinary(buffer) {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream((err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        });
+        stream.end(buffer);
+    });
+}
+
 /**
  * @name getProducts
  * @description Retrieves all products sorted by their creation date.
@@ -58,7 +68,7 @@ async function createProduct(req, res) {
             });
         }
 
-        const result = await cloudinary.uploader.upload(req.file.path);
+        const result = await uploadBufferToCloudinary(req.file.buffer);
 
         const product = await Product.create({
             name,
