@@ -212,25 +212,6 @@ Base URL: `http://localhost:5000/api`
 
 **Order**: `userId` (ref User), `products[]` (`productId`, `quantity`, `price`), `totalAmount`, `shippingAddress` (`fullName`, `phone`, `address`, `city`, `state`, `postalCode`, `country`), `paymentID`, `status` (enum), timestamps
 
----
-
-## ⚖️ Tradeoffs & Notes
-
-### Known Limitations
-- No automated test suite yet (manual/Postman testing)
-- No pagination on product listing endpoint
-- Cart state is client-side (Redux) only, not persisted to the DB per-user
-
-### Possible Improvements
-- Add product search/filter (by category, price range)
-- Add pagination to `/api/products` and `/api/order`
-- Wishlist / favorites feature
-- Email notifications on order status change
-- Persist cart server-side for logged-in users across devices
-- Unit/integration tests for controllers
-
----
-
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
