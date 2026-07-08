@@ -14,7 +14,12 @@ const app = express()
 connectDB()
 
 //middlewares
-app.use(cors());
+app.use(cors(
+    {
+        origin: ['http://localhost:3000', 'http://127.0.0.1:3000', process.env.FRONTEND_URL],
+        credentials: true
+    }
+));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
@@ -34,10 +39,19 @@ app.use('/api/payment', paymentRoutes)
 app.use("/api/analytics", analyticsRoutes)
 
 
+// serve frontend in production
+if(process.env.NODE_ENV == 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/build')))
 
-app.get("/", (req, res) => {
-    res.send("shopnext backend is running")
-})
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../frontend/build/index.html'))
+    })
+}
+else {
+    app.get("/", (req, res) => {
+        res.send("shopnext backend is running")
+    })
+}
 
 
 const PORT = process.env.PORT || 5000;
