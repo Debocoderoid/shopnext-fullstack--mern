@@ -5,8 +5,9 @@ import Footer from './components/Footer';
 import About from './pages/about';
 import Disclaimer from './pages/disclaimer';
 import ReturnPolicy from './pages/ReturnPolicy';
-import Login from './pages/login';
 import Register from './pages/register';
+import VerifyEmail from './pages/VerifyEmail';
+import Login from './pages/login';
 import ProductDetail from './pages/productDetails';
 import Cart from './pages/cart';
 import Checkout from './pages/checkout';
@@ -32,6 +33,7 @@ function App() {
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/return" element={<ReturnPolicy />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />}></Route>
           <Route path="/login" element={<Login />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/shop" element={<Shop />} />
