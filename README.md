@@ -1,6 +1,19 @@
-# 🛒 ShopNext — Full-Stack E-Commerce Platform
+<div align="center">
+  <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="ShopNext Logo" width="80" />
+  <h1>ShopNext — Full-Stack MERN E-Commerce Platform</h1>
+  <p>A full-stack e-commerce application built with <b>React + Redux + Node.js/Express + MongoDB</b>, featuring product browsing, cart & checkout, Razorpay payments, order tracking, and a full admin dashboard for managing products, orders, and users.</p>
 
-A full-stack e-commerce application built with **React + Redux + Node.js/Express + MongoDB**, featuring product browsing, cart & checkout, Razorpay payments, order tracking, and a full admin dashboard for managing products, orders, and users.
+  ![Node](https://img.shields.io/badge/Node.js-≥18-339933?logo=node.js&logoColor=white)
+  ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+  ![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
+  ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
+  ![Razorpay](https://img.shields.io/badge/Payments-Razorpay-0C2451?logo=razorpay&logoColor=white)
+</div>
+
+<img width="1873" height="693" alt="image" src="https://github.com/user-attachments/assets/cad60270-8b80-4ee0-9686-9e9653210a58" />
+<img width="1883" height="902" alt="image" src="https://github.com/user-attachments/assets/b35ba45a-f9d9-4031-88ff-041a8777322a" />
+<img width="1886" height="908" alt="image" src="https://github.com/user-attachments/assets/ab3301e6-534a-472c-b245-34d00c014b7a" />
+
 
 ---
 
@@ -62,9 +75,12 @@ npm run start:frontend   # frontend only
 ```
 
 ### 5. Seed the Database (optional)
+Populates the DB with an admin user, a sample user, and demo products, then wipes and re-inserts on every run:
 ```bash
 npm run seed
 ```
+> **Seed Admin Login:** `admin@shopnext.com` / `123456`
+> **Seed User Login:** `debo@example.com` / `123456`
 
 ### 6. Production Build
 ```bash
@@ -96,6 +112,41 @@ npm start          # serves backend (and built frontend, if NODE_ENV=production)
 - **Image uploads** — Multer (local temp storage) → Cloudinary (persistent hosting)
 - **Email** — Nodemailer integration for verification/notifications
 - **CORS** — Configured for local + deployed frontend origins
+
+---
+## ☁️ Deploying on Vercel (Frontend + Backend as Two Projects)
+ 
+Vercel now supports deploying Express apps directly (zero-config), but it runs them as **serverless functions**, not a persistent server. That means:
+- The filesystem is read-only (except `/tmp`, which doesn't persist) — this repo's image upload path has already been updated to upload directly from memory to Cloudinary instead of writing to disk, so it works on Vercel.
+- `express.static()` doesn't serve files on Vercel, so the "serve the React build from Express" block in `server.js` is a no-op there — deploy the frontend as its **own** Vercel project instead.
+- MongoDB connections are cached across warm invocations (already handled in `backend/src/config/db.js`) to avoid exhausting Atlas's connection limit.
+### 1. Deploy the backend
+1. In Vercel, **Add New Project** → import this repo.
+2. Set **Root Directory** to `backend`.
+3. Framework preset: Vercel auto-detects Express — no `vercel.json` needed.
+4. Add environment variables (Project Settings → Environment Variables):
+```
+   MONGO_URI=...
+   JWT_SECRET=...
+   EMAIL_USER=...
+   EMAIL_PASS=...
+   CLOUDINARY_CLOUD_NAME=...
+   CLOUDINARY_API_KEY=...
+   CLOUDINARY_API_SECRET=...
+   RAZORPAY_KEY_ID=...
+   RAZORPAY_KEY_SECRET=...
+   FRONTEND_URL=https://your-frontend-project.vercel.app
+   NODE_ENV=production
+```
+5. In MongoDB Atlas → Network Access, allow `0.0.0.0/0` (Vercel functions run from dynamic IPs).
+6. Deploy. You'll get a URL like `https://shopnext-backend.vercel.app`.
+### 2. Deploy the frontend
+1. **Add New Project** again → same repo, but set **Root Directory** to `frontend`.
+2. Vercel auto-detects Create React App (`react-scripts`).
+3. Add an environment variable pointing at your deployed backend, e.g. `REACT_APP_API_URL=https://shopnext-backend.vercel.app/api`, and make sure your frontend's API calls use it instead of the CRA `proxy` field (the `proxy` setting in `frontend/package.json` only works in local dev, not in production builds).
+4. Deploy. You'll get a URL like `https://shopnext.vercel.app`.
+### 3. Connect the two
+- Update the backend's `FRONTEND_URL` env var to match the deployed frontend URL, then redeploy the backend (this feeds into the CORS `origin` list in `server.js`).
 
 ---
 
@@ -179,33 +230,18 @@ Base URL: `http://localhost:5000/api`
 
 **Order**: `userId` (ref User), `products[]` (`productId`, `quantity`, `price`), `totalAmount`, `shippingAddress` (`fullName`, `phone`, `address`, `city`, `state`, `postalCode`, `country`), `paymentID`, `status` (enum), timestamps
 
----
-
-## ⚖️ Tradeoffs & Notes
-
-### Known Limitations
-- No automated test suite yet (manual/Postman testing)
-- No pagination on product listing endpoint
-- Cart state is client-side (Redux) only, not persisted to the DB per-user
-
-### Possible Improvements
-- Add product search/filter (by category, price range)
-- Add pagination to `/api/products` and `/api/order`
-- Wishlist / favorites feature
-- Email notifications on order status change
-- Persist cart server-side for logged-in users across devices
-- Unit/integration tests for controllers
-
----
-
 ## 🛠️ Tech Stack
 
-**Frontend:** React 19, React Router, Redux Toolkit, React Redux
-**Backend:** Node.js, Express 5, Mongoose 9
-**Auth:** JWT, bcryptjs
-**Payments:** Razorpay
-**Media:** Multer + Cloudinary
-**Email:** Nodemailer
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, React Router 7, Redux Toolkit, React Redux, Context API (auth) |
+| Backend | Node.js, Express 5 |
+| Database | MongoDB + Mongoose 9 |
+| Auth | JWT (jsonwebtoken), bcryptjs |
+| Payments | Razorpay |
+| Media | Multer (upload) → Cloudinary (storage) |
+| Email | Nodemailer |
+| Dev Tooling | Nodemon, Concurrently (monorepo dev script) |
 
 ---
 

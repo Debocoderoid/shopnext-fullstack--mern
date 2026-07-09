@@ -1,16 +1,34 @@
 const mongoose = require('mongoose')
 
-async function connectDB() {
-    
-    try {
-        await mongoose.connect(process.env.MONGO_URI)
+let cached = global._mongooseConn
 
-        console.log("database is connected")
+if (!cached) {
+    cached = global._mongooseConn = { conn: null, promise: null }
+}
+
+async function connectDB() {
+    if (cached.conn) {
+        return cached.conn
     }
-    catch(err) {
-        console.error("Database connection failed:", err.message);
-        process.exit(1);
+
+    if (!cached.promise) {
+        cached.promise = mongoose.connect(process.env.MONGO_URI, {
+            maxPoolSize: 10,
+        }).then((mongooseInstance) => {
+            console.log("database is connected")
+            return mongooseInstance
+        })
     }
+
+    try {
+        cached.conn = await cached.promise
+    } catch (err) {
+        cached.promise = null
+        console.error("Database connection failed:", err.message)
+        throw err
+    }
+
+    return cached.conn
 }
 
 module.exports = connectDB

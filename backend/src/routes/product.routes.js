@@ -6,7 +6,7 @@ const {protect} = require('../middlewares/auth.middleware')
 const {admin} = require('../middlewares/admin.middleware')
 
 const multer = require('multer')
-const upload = multer({ dest: 'uploads/'})
+const upload = multer({ storage: multer.memoryStorage() })
 
 router.get("/", getProducts)
 router.get("/:id", getProductById)
