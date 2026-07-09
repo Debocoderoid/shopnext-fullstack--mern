@@ -9,18 +9,20 @@ export const AuthProvider = ({ children }) => {
             : null
     );
 
-    const login = (userData) => {
+    const login = useCallback((userData) => {
         setUser(userData);
         localStorage.setItem("userInfo", JSON.stringify(userData));
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setUser(null);
         localStorage.removeItem("userInfo");
-    };
+    }, []);
+
+    const value = useMemo(() => ({ user, login, logout }), [user, login, logout]);
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
