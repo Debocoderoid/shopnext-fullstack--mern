@@ -1,7 +1,6 @@
-import React, {useState, useEffect, useContext} from "react";
-import {useParams, useNavigate, Link} from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {useParams, Link} from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { AuthContext } from "../context/AuthContext";
 import { addToCart } from "../redux/cartSlice";
 import '../styles/product.css'
 
@@ -10,8 +9,6 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null)
     const [loading, setLoading] = useState(true)
     const dispatch = useDispatch()
-    const { user } = useContext(AuthContext);
-    const navigate = useNavigate();
 
     useEffect (() => {
         const fetchProduct = async() => {
