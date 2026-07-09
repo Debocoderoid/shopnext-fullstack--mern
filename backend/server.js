@@ -39,6 +39,7 @@ app.use('/api/payment', paymentRoutes)
 app.use("/api/analytics", analyticsRoutes)
 
 
+const path = require('path')
 // serve frontend in production
 if(process.env.NODE_ENV == 'production') {
     app.use(express.static(path.join(__dirname, '../frontend/build')))
