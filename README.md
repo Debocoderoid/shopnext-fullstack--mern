@@ -10,6 +10,11 @@
   ![Razorpay](https://img.shields.io/badge/Payments-Razorpay-0C2451?logo=razorpay&logoColor=white)
 </div>
 
+<img width="1873" height="693" alt="image" src="https://github.com/user-attachments/assets/cad60270-8b80-4ee0-9686-9e9653210a58" />
+<img width="1883" height="902" alt="image" src="https://github.com/user-attachments/assets/b35ba45a-f9d9-4031-88ff-041a8777322a" />
+<img width="1886" height="908" alt="image" src="https://github.com/user-attachments/assets/ab3301e6-534a-472c-b245-34d00c014b7a" />
+
+
 ---
 
 ## 🚀 Setup Instructions
