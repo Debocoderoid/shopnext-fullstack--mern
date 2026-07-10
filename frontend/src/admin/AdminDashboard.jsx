@@ -15,7 +15,7 @@ const AdminDashboard = () => {
 
         const fetchStats = async () => {
             try {
-                const res = await fetch('/api/analytics/', {
+                const res = await fetch('/api/analytics', {
                     headers: {Authorization: `Bearer ${user.token}`}
                 })
                 
